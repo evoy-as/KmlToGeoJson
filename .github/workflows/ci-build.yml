@@ -1,0 +1,50 @@
+name: ci-build
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+  workflow_dispatch:
+env: 
+  dotnet_version: 8.0
+  solution_file: 'KmlToGeoJson/KmlToGeoJson.sln'
+  build_configuration: release
+  test_results_folder: ./test-results
+  source_folder: ./KmlToGeoJson
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ env.dotnet_version }}.x
+      - name: Set up dependency caching for faster builds
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+      - name: Restore NuGet packages
+        run: | 
+          dotnet build ${{ env.solution_file }}
+      - name: Build projects - ${{ env.build_configuration }}
+        run: | 
+          dotnet build ${{ env.solution_file }} --configuration ${{ env.build_configuration }}
+      - name: Run unit tests
+        run: | 
+          dotnet test ${{ env.source_folder }}/**/*Test.csproj --configuration ${{ env.build_configuration }} 
+      - name: Create Nuget-package - ${{ env.build_configuration }}
+        if: success() && github.ref == 'refs/heads/master'
+        run: dotnet pack ${{ env.source_folder }}/KmlToGeoJson/KmlToGeoJson.csproj --configuration ${{ env.build_configuration }} -o ${{ env.source_folder }}/NuGet
+      - name: Push Nuget-package to GitHub Registry
+        run: | 
+          dotnet nuget push ${{ env.source_folder }}/NuGet/KmlToGeoJson.*.nupkg --source https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json --api-key ${{secrets.GITHUB_TOKEN}}
+  
