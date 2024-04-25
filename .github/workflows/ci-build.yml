@@ -42,9 +42,9 @@ jobs:
         run: | 
           dotnet test ${{ env.source_folder }}/**/*Test.csproj --configuration ${{ env.build_configuration }} 
       - name: Create Nuget-package - ${{ env.build_configuration }}
-        if: success() && github.ref == 'refs/heads/master'
         run: dotnet pack ${{ env.source_folder }}/KmlToGeoJson/KmlToGeoJson.csproj --configuration ${{ env.build_configuration }} -o ${{ env.source_folder }}/NuGet
       - name: Push Nuget-package to GitHub Registry
+        if: success() && github.ref == 'refs/heads/master'
         run: | 
           dotnet nuget push ${{ env.source_folder }}/NuGet/KmlToGeoJson.*.nupkg --source https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json --api-key ${{secrets.GITHUB_TOKEN}}
   
