@@ -1,0 +1,8 @@
+{
+    "workbench.colorCustomizations": {
+        "activityBar.background": "#1E1A68",
+        "titleBar.activeBackground": "#2B2491",
+        "titleBar.activeForeground": "#FAF9FE"
+    },
+    "dotnet-test-explorer.testProjectPath": "KmlToGeoJson/**/*Test.@(csproj|vbproj|fsproj)"
+}
