@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <Version>0.2.1</Version>
+    <Version>0.2.2</Version>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Description>A small library to convert from KML to GeoJSON.</Description>
     <Copyright>Copyright © 2020 Philipp Wagner</Copyright>
